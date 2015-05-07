@@ -1,0 +1,12 @@
+# Escolha o tópico como prefixo do título 
+[BUGFIX|FEATURE][ADD|MODIFY|REFACTORING|REMOVE] - Breve resumo das alterações introduzidas por este patch
+
+Descrição explicativa e mais detalhadas de maneira imperativa.
+Quebre as linhas a cada 74 caracteres.
+Permita que outros possam assimilar as motivações deste release.
+
+   * Liste as diferenças de funcionalidades desta nova 
+     versão.
+   * Utilize um asterisco como marcador
+
+#[TASK]: #Número do ticket atendido

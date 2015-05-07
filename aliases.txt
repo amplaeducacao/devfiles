@@ -1,0 +1,4 @@
+@echo off
+
+alias=doskey /macros | sort
+w=cd C:\wamp\www\$*

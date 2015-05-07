@@ -1,0 +1,11 @@
+[user]
+	name =
+	email =
+[http]
+	postBuffer = 524288000
+[core]
+	editor = "C:/Users/d.ribeiro/.giteditor.bat"
+[commit]
+	template = ""
+[credential]
+	helper = wincred

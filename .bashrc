@@ -1,5 +1,5 @@
 # .bashrc
-# Origin Source: http://github.com/durdn/cfg/.bashrc
+# Origin Source: https://github.com/amplaeducacao/devfiles
 
 
 #/*------------------------------------*\
@@ -24,7 +24,11 @@ if [ -f ~/.bash_aliases ]; then
 fi
 
 if [ -f ~/.git-completion.bash ]; then
-  . ~/.git-completion.bash
+	. ~/.git-completion.bash
+fi
+
+if [ -f ~/.git-flow.bash ]; then
+	. ~/.git-flow.bash
 fi
 
 
@@ -32,64 +36,22 @@ fi
 	#GIT BOOKMARKS
 #\*------------------------------------*/
 
-# Bashmarks from https://github.com/huyng/bashmarks (see copyright there) {{{
-# USAGE:
-# s bookmarkname - saves the curr dir as bookmarkname
-# g bookmarkname - jumps to the that bookmark
-# g b[TAB] - tab completion is available
-# l - list all bookmarks
+. ~/.bashmarks.sh
 
-# setup file to store bookmarks
-if [ ! -n "$SDIRS" ]; then
-    SDIRS=~/.sdirs
-fi
-touch $SDIRS
 
-# save current directory to bookmarks
-function s {
-  cat ~/.sdirs | grep -v "export DIR_$1=" > ~/.sdirs1
-  mv ~/.sdirs1 ~/.sdirs
-  echo "export DIR_$1=$PWD" >> ~/.sdirs
-}
+#/*------------------------------------*\
+	#GIT REMOTE
+#\*------------------------------------*/
 
-# jump to bookmark
-function g {
-  source ~/.sdirs
-  cd $(eval $(echo echo $(echo \$DIR_$1)))
-}
+alias gra='git remote add'
 
-# delete bookmark
-function d {
-    findstr /v /r 
-}
 
-# list bookmarks with dirnam
-function l {
-  source ~/.sdirs
-  env | grep "^DIR_" | cut -c5- | grep "^.*="
-}
-# list bookmarks without dirname
-function _l {
-  source ~/.sdirs
-  env | grep "^DIR_" | cut -c5- | grep "^.*=" | cut -f1 -d "="
-}
+#/*------------------------------------*\
+	#GIT UPDATE
+#\*------------------------------------*/
 
-# safe delete line from sdirs
-function _purge_line {
-    if [ -s "$1" ]; then
-        # safely create a temp file
-        t=$(mktemp -t bashmarks.XXXXXX) || exit 1
-        trap "rm -f -- '$t'" EXIT
-
-        # purge line
-        sed "/$2/d" "$1" > "$t"
-        mv "$t" "$1"
-
-        # cleanup temp file
-        rm -f -- "$t"
-        trap - EXIT
-    fi
-}
+alias gru='git remote update --prune'
+alias gfo='git fetch origin'
 
 
 #/*------------------------------------*\
@@ -113,22 +75,30 @@ alias gof='git checkout -- '
 	#GIT BRANCH
 #\*------------------------------------*/
 
+# List local branches
 alias gbl='git branch '
+
+# List remote branches
 alias gbr='git branch -r'
+
+# List all branches
 alias gb='git branch -a'
 
+# Delete local branch
 alias gbdl='git branch -D'
 
+# Delete remote branch
 function gbdr(){
 	git push origin :$1
 }
 
+# Delete local and remote branch
 function gbd(){
 	git branch -D $1
 	git push origin :$1
 }
 
-# git rename current branch and backup if overwritten
+# Rename current branch and backup if overwritten
 function gbrn(){
   curr_branch_name=$(git branch | grep \* | cut -c 3-);
   if [ -z $(git branch | cut -c 3- | grep -x $1) ]; then
@@ -143,8 +113,8 @@ function gbrn(){
 
 alias go='git checkout '
 
+# Create new branch and then checked out
 alias gob='git checkout -b '
-
 
 
 #/*------------------------------------*\
@@ -162,6 +132,9 @@ alias gca='git commit --amend'
 alias gpl='git pull origin '
 
 alias gps='git push origin '
+
+# Push all tags
+alias gpst='git push --tags'
 
 
 #/*------------------------------------*\
@@ -190,18 +163,21 @@ alias gt='git tag -a '
 #\*------------------------------------*/
 
 alias gss='git stash save '
-alias gsf='git stash --patch'
+alias gsf='git stash -p'
 alias gsl='git stash list '
 alias gsa='git stash apply'
 alias gsp='git stash pop'
 alias gsc='git stash clear'
 
+# Apply specific stash
 function gsas(){
 	git stash apply stash@{$1}
 }
+# Remove specific stash
 function gsd(){
 	git stash drop stash@{$1}
 }
+# Apply specific stash and remove it
 function gsps(){
 	git stash apply stash@{$1}
 	git stash drop stash@{$1}
@@ -209,21 +185,44 @@ function gsps(){
 
 
 #/*------------------------------------*\
-	#GIT RESET
+	#GIT CLEAN CACHE
 #\*------------------------------------*/
 
-alias gr='git reset '
-alias grh='git reset --hard HEAD~'
-alias grhc='git reset --hard '
-alias grf='git reset HEAD^ '
+# Clean folders and files cache
+alias gcc='git clean -f -d'
 
 
 #/*------------------------------------*\
-	#GIT UPDATE
+	#GIT PATCH
 #\*------------------------------------*/
 
-alias gru='git remote update --prune'
-alias gfo='git fetch origin'
+# Create .patch file in .git-patches folder from a commit
+function gf-p(){
+	if [ ! -d .git-patches ]; then
+		mkdir .git-patches
+	fi
+	git format-patch -1 $2 --stdout > .git-patches/$1-$2.patch
+}
+
+# Apply patch
+function gam(){
+	git am -s -3 .git-patches/$1
+}
+
+# Continue after solving conflits to commit applied patch
+alias gamr='git am -r'
+
+
+#/*------------------------------------*\
+	#GIT RESET
+#\*------------------------------------*/
+
+alias gr='git reset'
+alias grh='git reset --hard HEAD~'
+alias grhc='git reset --hard'
+
+# Reset modified file
+alias grf='git reset HEAD^'
 
 
 #/*------------------------------------*\
@@ -267,13 +266,14 @@ function sprint_author(){
 	git log $1..HEAD  --date=local --author=$2 --pretty=format:'================================================%ncommit: %h%nAuthor: %an%nDate: %ad (%ar)%n%x09%s%n%n' > "$2-${CURRENT}.txt"
 }
 
+# Export log to JSON file
 function json(){
 	CURRENT=$(date +'%d-%m-%Y')
 	git log  --date=local \
 	    --pretty=format:'{%n  "commit": "%H",%n  "author": "%an <%ae>",%n  "date": "%ad",%n  "message": "%s"%n},' \
 	    $@ | \
 	    perl -pe 'BEGIN{print "["}; END{print "]\n"}' | \
-	    perl -pe 's/},]/}]/' > "log-${CURRENT}.txt"
+	    perl -pe 's/},]/}]/' > "log-${CURRENT}.json"
 }
 
 #/*------------------------------------*\
@@ -293,30 +293,20 @@ __git_complete gps _git_branch
 
 __git_complete gm _git_branch
 
+__git_complete gf _git_flow
+__git_complete gfi __git_flow_init
 
-#/*------------------------------------*\
-	#UTILS
-#\*------------------------------------*/
+__git_complete gfs __git_flow_feature_start
+__git_complete gff __git_flow_feature_finish
+__git_complete gfp __git_flow_feature_pull
+__git_complete gfps __git_flow_feature_publish
+__git_complete gft __git_flow_feature_track
 
-function u {
-	case $1 in
-		#lista todas functions
-		fun|f)
-			typeset -F | col 3 | grep -v _
-		;;
-		#lista todas definições de functions
-		def|d)
-			typeset -f $2
-		;;
+__git_complete gfrs __git_flow_release_start
+__git_complete gfrf __git_flow_release_finish
+__git_complete gfrp __git_flow_release_pull
+__git_complete gfrps __git_flow_release_publish
+__git_complete gfrt __git_flow_release_track
 
-		help|h|*)
-			echo "[u]tils commands available:"
-			echo " [cr]eate, [li]st, [cl]one"
-			echo " [i]nstall,[m]o[v]e, [re]install"
-			echo " [f|fun] lists all bash functions defined in .bashrc"
-			echo " [def] <fun> lists definition of function defined in .bashrc"
-			echo " [k]ey <host> copies ssh key to target host"
-			echo " [tr]ackall], [h]elp"
-		;;
-	esac
-}
+__git_complete gfhs __git_flow_hotfix_start
+__git_complete gfhf __git_flow_hotfix_finish

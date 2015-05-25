@@ -206,7 +206,7 @@ function gf-p(){
 
 # Apply patch
 function gam(){
-	git am -s -3 .git-patches/$1
+	git am -s -3 .git-patches/$1.patch
 }
 
 # Continue after solving conflits to commit applied patch

@@ -1,5 +1,5 @@
-# Escolha o tópico como prefixo do título 
-[BUGFIX|FEATURE|PATCH][ADD|MODIFY|REFACTORING|REMOVE] - Breve resumo das alterações introduzidas por este patch
+# Escolha o tópico como prefixo do título
+# [BUGFIX|FEATURE|PATCH][ADD|MODIFY|REFACTORING|REMOVE] - Breve resumo das alterações introduzidas por este patch
 
 Descrição explicativa e mais detalhadas de maneira imperativa.
 Quebre as linhas a cada 74 caracteres.

@@ -1,0 +1,5 @@
+<snippet>
+	<content><![CDATA[#${1} ${1/.*(\.)$|.*/?1::\n/}${1/^([^bfp]+)?((b)|(f)|(p))(.*)/?1::?3:[BUGFIX]:?4:[FEATURE]:?5:[PATCH]?6::/gi}${1/($)|(b|f|p)((a)|(m)|(rf)|(rm)).*$|.*/?4:[ADD]:?5:[MODIFY]:?6:[REFACTORING]:?7:[REMOVE]/gi} - ${1/^((b|f|p)(a|m|rf|rm)?)/?1::/gi}
+]]></content>
+	<tabTrigger>cm</tabTrigger>
+</snippet>

@@ -5,7 +5,22 @@
 	postBuffer = 524288000
 [core]
 	editor = "C:/Users/d.ribeiro/.giteditor.bat"
+	safecrlf = false
 [commit]
 	template = ""
+[merge]
+	tool = kdiff3
+[mergetool]
+	keepBackup = false
+[mergetool "kdiff3"]
+	path = "C:\\Program Files\\KDiff3\\kdiff3.exe"
+	trustExitCode = false
+[diff]
+	tool = kdiff3
+	guitool = kdiff3
+[difftool]
+	prompt = false
+[difftool "kdiff3"]
+	path = "C:\\Program Files\\KDiff3\\kdiff3.exe"
 [credential]
 	helper = wincred

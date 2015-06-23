@@ -24,7 +24,7 @@ if [ -f ~/.bash_aliases ]; then
 fi
 
 if [ -f ~/.git-completion.bash ]; then
-	. ~/.git-completion.bash 
+	. ~/.git-completion.bash
 fi
 
 if [ -f ~/.git-flow.bash ]; then
@@ -58,7 +58,7 @@ alias gfo='git fetch origin'
 	#GIT STATUS
 #\*------------------------------------*/
 
-alias gs='git status '
+alias gs='git status'
 
 
 #/*------------------------------------*\
@@ -68,7 +68,7 @@ alias gs='git status '
 alias ga='git add -A'
 alias gaf='git add '
 
-alias gof='git checkout -- '
+alias gof='git checkout --'
 
 
 #/*------------------------------------*\
@@ -76,7 +76,7 @@ alias gof='git checkout -- '
 #\*------------------------------------*/
 
 # List local branches
-alias gbl='git branch '
+alias gbl='git branch'
 
 # List remote branches
 alias gbr='git branch -r'
@@ -111,10 +111,10 @@ function gbrn(){
   fi
 }
 
-alias go='git checkout '
+alias go='git checkout'
 
 # Create new branch and then checked out
-alias gob='git checkout -b '
+alias gob='git checkout -b'
 
 
 #/*------------------------------------*\
@@ -126,12 +126,19 @@ alias gca='git commit --amend'
 
 
 #/*------------------------------------*\
+	#GIT STATUS, ADD and COMMIT
+#\*------------------------------------*/
+
+alias gac='git add -A && git commit'
+
+
+#/*------------------------------------*\
 	#GIT PULL and PUSH
 #\*------------------------------------*/
 
-alias gpl='git pull origin '
+alias gpl='git pull origin'
 
-alias gps='git push origin '
+alias gps='git push origin'
 
 # Push all tags
 alias gpst='git push --tags'
@@ -141,14 +148,16 @@ alias gpst='git push --tags'
 	#GIT MERGE
 #\*------------------------------------*/
 
-alias gm='git merge --no-ff '
+alias gm='git merge --no-ff'
+alias gmt='git mergetool -y'
 
 
 #/*------------------------------------*\
 	#GIT DIFF
 #\*------------------------------------*/
 
-alias gd='git diff '
+alias gd='git diff'
+alias gdt='git difftool'
 
 
 #/*------------------------------------*\
@@ -162,16 +171,16 @@ alias gomf='git diff --name-only | xargs subl'
 	#GIT TAG
 #\*------------------------------------*/
 
-alias gt='git tag -a '
+alias gt='git tag -a'
 
 
 #/*------------------------------------*\
 	#GIT STASH
 #\*------------------------------------*/
 
-alias gss='git stash save '
+alias gss='git stash save'
 alias gsf='git stash -p'
-alias gsl='git stash list '
+alias gsl='git stash list'
 alias gsa='git stash apply'
 alias gsp='git stash pop'
 alias gsc='git stash clear'
@@ -225,8 +234,8 @@ alias gamr='git am -r'
 #\*------------------------------------*/
 
 alias gr='git reset'
-alias grh='git reset --hard HEAD~'
-alias grhc='git reset --hard'
+alias grh='git reset --hard'
+alias grhh='git reset --hard HEAD~'
 
 # Reset modified file
 alias grf='git reset HEAD^'
@@ -259,7 +268,7 @@ alias gfhf='git flow hotfix finish'
 	#GIT LOG
 #\*------------------------------------*/
 
-alias gl='git log '
+alias gl='git log'
 alias gle='git log --oneline --decorate'
 alias gll='git log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat'
 alias gls1='git log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate'

@@ -1,0 +1,138 @@
+#!/usr/bin/env php
+<?php
+$message = file_get_contents($argv[1]);
+check($message);
+exit(0);
+
+function check($message){
+	/**
+	 * Variáveis de controle
+	 */
+	$line_length_check = false;
+	$header_check = false;
+	$author_check = false;
+	$branch_check = false;
+	$errors = array();
+	$total_lines = 0;
+	$new_lines = array();
+	$total_new_lines = 0;
+	
+	if (strlen($message) < 10) {
+		$errors[] = 'A mensagem do commit deve possuir no mínimo 10 caracteres!';
+	}
+
+	$lines = preg_split('/\v/', $message, -1, PREG_SPLIT_NO_EMPTY);
+
+	foreach ($lines as $line) {
+		/**
+		 * Caso seja um comentário, ignorar
+		 */
+		if (substr($line, 0, 1) === '#') {
+			continue;
+		}
+
+		$new_lines[] = $line;
+		$total_new_lines++;
+
+		/**
+		 * Verificar o tamanho da linha
+		 */
+		if (!$line_length_check) {
+			if (strlen($line) > 74) {
+				$verbs = array();
+				preg_match_all('/\[(MERGE)\]/', $new_lines[0], $verbs);
+
+				/**
+				 * Se não for merge
+				 */
+				if(empty($verbs[1][0])){
+					$errors[] = 'As linhas não devem ultrapassar o limite de 74 caracteres (incluindo espaços)!';
+				}
+
+
+				$line_length_check = true;
+			}
+		}
+	}
+
+	if ($total_new_lines < 3) {
+		$errors[] = 'A mensagem de commit deve possuir no mínimo 3 linhas: título, autor, e branch!';
+	}
+
+	/**
+	 * Verificar o cabeçalho da mensagem
+	 */
+	if (!$header_check) {
+		$verbs = array();
+		preg_match_all('/\[([A-Za-z-]+)\]/', $new_lines[0], $verbs);
+
+		/**
+		 * Se houve matches
+		 */
+		if (!empty($verbs[1])) {
+			$verbs = $verbs[1];
+
+			/**
+			 * Verifico a natureza
+			 */
+			if (isset($verbs[0])) {
+				if (!in_array($verbs[0], array('BUGFIX', 'FEATURE', 'PATCH', 'MERGE'))) {
+					$errors[] = '"' . $verbs[0] . '" não é uma natureza válida. Use apenas BUGFIX, FEATURE, PATCH
+ou MERGE';
+				}
+			} else {
+				$errors[] = 'Natureza não definida!';
+			}
+
+			/**
+			 * Verifico a ação
+			 */
+			if (isset($verbs[1])) {
+				if (!in_array($verbs[1], array('ADD', 'MODIFY', 'REFACTORING', 'REMOVE', 'CONFLICTS', 'NO-CONFLICTS'))) {
+					$errors[] = '"' . $verbs[1] . '" não é uma ação válida. Use apenas ADD, MODIFY, REFACTORING, REMOVE, CONFLICTS
+ ou NO-CONFLICTS';
+				}
+			} else {
+				$errors[] = 'Ação não definida!';
+			}
+		} else {
+			$errors[] = 'O título está no formato inválido!';
+		}
+
+		$header_check = true;
+	}
+
+	/**
+	 * Verificar autor e branch
+	 */
+	if (!$author_check && !$branch_check) {
+		/**
+		 * Verificar se linhas estão invertidas
+		 */
+		$author_line = $new_lines[$total_new_lines - 2];
+		$author_info = array();
+		preg_match('/\[([A-Z]+)\]/', $author_line, $author_info);
+
+		$branch_line = $new_lines[$total_new_lines - 1];
+		$branch_info = array();
+		preg_match('/\[([A-Z]+)\]/', $branch_line, $branch_info);
+
+		if ((!empty($author_info[1]) && !empty($branch_info[1])) && ($branch_info[1] !== 'AUTHOR' && $author_info[1] !== 'BRANCH')) {
+			if ($author_info[1] !== 'AUTHOR') {
+				$errors[] = 'Autor não definido!';
+			}
+
+			if ($branch_info[1] !== 'BRANCH') {
+				$errors[] = 'Branch não definido!';
+			}
+		} else {
+			$errors[] = 'Autor e Branch devem ser as duas últimas linhas da mensagem, respectivamente!';
+		}
+	}
+
+	if (count($errors)) {
+		echo implode(",\n", $errors);
+		exit(1);
+	}
+}
+?>

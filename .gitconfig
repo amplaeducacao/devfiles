@@ -1,11 +1,27 @@
 [user]
-	name =
-	email =
+	name = 'Douglas Araujo'
+	email = doug.araujos@gmail.com
 [http]
 	postBuffer = 524288000
 [core]
-	editor = "C:/Users/d.ribeiro/.giteditor.bat"
+	editor = "C:/Users/d.silva.CONCURSOS/.giteditor.bat"
+	safecrlf = false
+	autocrlf = false 
 [commit]
-	template = ""
+	template = "C:/Users/d.silva.CONCURSOS/.gitmessage.txt"
+[merge]
+	tool = kdiff3
+[mergetool]
+	keepBackup = false
+[mergetool "kdiff3"]
+	path = "C:\\Program Files\\KDiff3\\kdiff3.exe"
+	trustExitCode = false
+[diff]
+	tool = kdiff3
+	guitool = kdiff3
+[difftool]
+	prompt = false
+[difftool "kdiff3"]
+	path = "C:\\Program Files\\KDiff3\\kdiff3.exe"
 [credential]
 	helper = wincred

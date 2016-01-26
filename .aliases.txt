@@ -1,0 +1,9 @@
+@echo off
+
+alias=doskey /macros | sort
+s=echo.$1=cd %cd% >> %HOMEDRIVE%%HOMEPATH%/.aliases.txt && start cmd C:\Windows\System32\cmd.exe /E:ON /K C:\Ruby193\bin\setrbvars.bat && exit
+w=cd C:\wamp\www\$*
+iben=cd C:\wamp\www\pmiben\$*
+korres=cd C:\wamp\www\ampla-korres\$*
+gw=grunt watch
+grunt-start=C:\wamp\www\start-grunt-1.0.battest=cd C:\Users\d.silva

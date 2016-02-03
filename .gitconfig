@@ -1,14 +1,16 @@
 [user]
-	name = 'Douglas Araujo'
-	email = doug.araujos@gmail.com
+	name = ''
+	email = 
 [http]
 	postBuffer = 524288000
+[init]
+	templatedir = "~/.git_template"
 [core]
-	editor = "C:/Users/d.silva.CONCURSOS/.giteditor.bat"
+	editor = "~/.giteditor.bat"
 	safecrlf = false
 	autocrlf = false 
 [commit]
-	template = "C:/Users/d.silva.CONCURSOS/.gitmessage.txt"
+	template = "~/.gitmessage.txt"
 [merge]
 	tool = kdiff3
 [mergetool]

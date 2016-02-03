@@ -4,10 +4,10 @@
 if [ -n "$GIT_AUTHOR_NAME" ]; then
 	BRANCH=`git branch | grep '^\*' | cut -b3-`
 
-	if ! grep -q '\[AUTHOR\]' $1; then
+	if ! grep -q '\[AUTHOR\]' $1 || grep -q '\[PATCH\]' $1; then
 		echo "[AUTHOR] = $GIT_AUTHOR_NAME <$GIT_AUTHOR_EMAIL>" >> "$1"
 	fi
-	if ! grep -q '\[BRANCH\]' $1; then
+	if ! grep -q '\[BRANCH\]' $1 || grep -q '\[PATCH\]' $1; then
 		echo "[BRANCH] = $BRANCH" >> "$1"
 	fi
 fi

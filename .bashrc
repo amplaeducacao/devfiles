@@ -9,6 +9,8 @@
 URL='https://<USER>@bitbucket.org/dev-iob/'
 PROJECTSPATH='C:\wamp\www\' 
 HOSTSFILE='C:\Windows\System32\drivers\etc\hosts'
+IP='127.0.0.1';  #or use '$(ip)'
+DEPLOYFOLDER='.git-deploy'
 
 
 #/*------------------------------------*\
@@ -62,7 +64,17 @@ function gcl(){
 
 alias gr='git remote'
 alias gra='git remote add'
+alias grsu='git remote set-url'
 alias grr='git remote remove'
+
+
+#/*------------------------------------*\
+	#GIT SUBTREES
+#\*------------------------------------*/
+
+function gstl(){
+	git log | grep git-subtree-dir | tr -d ' ' | cut -d ":" -f2 | sort | uniq | xargs -I {} bash -c 'if [ -d $(git rev-parse --show-toplevel)/{} ] ; then echo {}; fi'
+}
 
 
 #/*------------------------------------*\
@@ -86,7 +98,7 @@ alias gs='git status'
 #\*------------------------------------*/
 
 alias ga='git add -A'
-alias gaf='git add '
+alias gaf='git add'
 
 alias gof='git checkout --'
 
@@ -105,7 +117,7 @@ alias gbr='git branch -r'
 alias gb='git branch -a'
 
 # Delete local branch
-alias gbdl='git branch -D'
+alias gbdl='git branch -d'
 
 # Delete remote branch
 function gbdr(){
@@ -114,8 +126,13 @@ function gbdr(){
 
 # Delete local and remote branch
 function gbd(){
-	git branch -D $1
+	$(gbdl $1)
 	$(gbdr $1)
+}
+
+# Delete ALL remote branches
+function gbdra(){
+	git branch -r --merged | grep -v master | grep -v develop | sed 's/origin\//:/' | xargs -n 1 git push origin
 }
 
 # Go to branch
@@ -192,7 +209,13 @@ alias gomf='git diff --name-only | xargs subl'
 
 alias gau='git update-index --assume-unchanged'
 alias gnau='git update-index --no-assume-unchanged'
-alias glu='git ls-files -v | grep "^h"'
+
+#List all assume-unchanged files
+function gaul(){
+	echo 'Assume unchanged files'
+	echo '----------------------'
+	git ls-files -v | grep "^h" | sed 's/^h //g'
+}
 
 
 #/*------------------------------------*\
@@ -200,6 +223,7 @@ alias glu='git ls-files -v | grep "^h"'
 #\*------------------------------------*/
 
 alias gt='git tag -a'
+alias gtl='git tag --sort -version:refname -n'
 alias gtd='git tag -d'
 
 function gtdr(){
@@ -212,7 +236,6 @@ function gtdr(){
 #\*------------------------------------*/
 
 alias gss='git stash save -u'
-alias gsf='git stash -p'
 alias gsl='git stash list'
 alias gsa='git stash apply'
 alias gsp='git stash pop'
@@ -246,13 +269,13 @@ alias gcc='git clean -f -d'
 
 # Create deploy folder
 function deploy(){
-	if [ ! -d deploy-temp ]; then
-		mkdir deploy-temp
+	if [ ! -d $DEPLOYFOLDER ]; then
+		mkdir $DEPLOYFOLDER
 	fi
 	if [ $1 ] ; then
-		DIFF=$(git diff --name-only $1)
+		DIFF=$(git diff --diff-filter=ACMRTUXB --name-only $1)
 	fi
-	git archive HEAD $DIFF | tar -x -C deploy-temp/
+	git archive HEAD $DIFF | tar -x -C $DEPLOYFOLDER/
 }
 
 
@@ -270,7 +293,7 @@ function gf-p(){
 
 # Apply patch
 function gam(){
-	git am -s -3 .git-patches/$1.patch
+	git am -s -3 --keep-cr .git-patches/$1.patch
 }
 
 # Abort Apply Patch
@@ -284,12 +307,12 @@ alias gamr='git am -r'
 	#GIT RESET
 #\*------------------------------------*/
 
+# Reset modified file
+alias grf='git reset HEAD'
+
 function grh(){
 	git reset --hard HEAD^$1
 }
-
-# Reset modified file
-alias grf='git reset HEAD'
 
 
 #/*------------------------------------*\
@@ -366,19 +389,13 @@ function ip(){
 
 # Add virtual host in Windows Hosts
 function add-host(){
-	if [ $2 ] ; then
-		IP=$2
-	else
-		IP=$(ip)
-	fi
-
 	if ! grep -q "$1.local" $HOSTSFILE; then
-		printf "\r\n$IP\t\t$1.local" >> $HOSTSFILE
+		printf "\r\n$IP\t\t\t$1.local" >> $HOSTSFILE
 	fi
 }
 # list bookmarks with dirnam
 function list-host {
-    cat $HOSTSFILE | awk /$(ip)/
+    cat $HOSTSFILE | findstr -R -c:"\.local" | sed 's/[[:space:]]\{1,\}/ ---> /g' | sort
         
     # if color output is not working for you, comment out the line below '\033[1;32m' == "red"
     # env | sort | awk '/^$IP\t.+/{split(substr($0,14),parts,"\t"); printf("\033[0;33m%-20s\033[0m %s\n", parts[1], parts[2]);}'
@@ -421,7 +438,6 @@ function stop-pool(){
 
 # Add Site, APP Pool and host name
 function add-site(){
-	IP=$(ip); 
 	PORT=80;
 	if [ $2 ] ; then
 		FOLDER=$2
